@@ -2,12 +2,13 @@
 
 namespace Kamel\Auditable;
 
-use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
-use Illuminate\Support\Collection;
+use Spatie\DataTransferObject\Exceptions\UnknownProperties;
+use Illuminate\Contracts\Container\BindingResolutionException;
 
 class AuditableQueryBuilder extends Builder
 {
@@ -23,7 +24,12 @@ class AuditableQueryBuilder extends Builder
      * @param Processor|null $processor
      * @param string $modelName
      */
-    public function __construct(ConnectionInterface $connection, $grammar = null, Processor $processor = null, string $modelName = '')
+    public function __construct(
+        ConnectionInterface $connection,
+                            $grammar = null,
+        Processor           $processor = null,
+        string              $modelName = ''
+    )
     {
         parent::__construct($connection, $grammar, $processor);
         $this->modelName = $modelName;
@@ -52,9 +58,10 @@ class AuditableQueryBuilder extends Builder
     /**
      * Insert a new record and get the value of the primary key.
      *
-     * @param  array  $values
-     * @param  string|null  $sequence
+     * @param array $values
+     * @param string|null $sequence
      * @return int
+     * @throws UnknownProperties
      */
     public function insertGetId(array $values, $sequence = null): int
     {
@@ -101,11 +108,11 @@ class AuditableQueryBuilder extends Builder
      * @param array $changedColumns
      * @return array
      */
-    public function removeUnwantedChanges(Object $originalModel, array $changedColumns): array
+    public function removeUnwantedChanges(object $originalModel, array $changedColumns): array
     {
         foreach ($changedColumns as $column => $value) {
             $wasColumnChanged = @($originalModel->$column !== $value);
-            if(str_contains($column, '.') || !$wasColumnChanged) {
+            if (str_contains($column, '.') || !$wasColumnChanged) {
                 unset($changedColumns[$column]);
             }
         }
@@ -118,9 +125,9 @@ class AuditableQueryBuilder extends Builder
      * @param Object $originalModel
      * @param array $valuesAfterChanges
      * @return AuditDTO
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|UnknownProperties
      */
-    protected function makeAudit(Object $originalModel, array $valuesAfterChanges): AuditDTO
+    protected function makeAudit(object $originalModel, array $valuesAfterChanges): AuditDTO
     {
         $valuesBeforeChanges = $this->getValuesBeforeChange($originalModel, $valuesAfterChanges);
         $userType = is_object(auth()->user()) ? get_class(auth()->user()) : null;
@@ -128,7 +135,7 @@ class AuditableQueryBuilder extends Builder
 
         return new AuditDTO([
             'model_name' => $this->modelName,
-            'model_id' => (int) $originalModel->$modelPrimaryKey,
+            'model_id' => (int)$originalModel->$modelPrimaryKey,
             'old_values' => $valuesBeforeChanges,
             'new_values' => $valuesAfterChanges,
             'user_type' => $userType,
@@ -143,7 +150,7 @@ class AuditableQueryBuilder extends Builder
      * @param array $changedColumns
      * @return array
      */
-    public function getValuesBeforeChange(Object $originalModel, array $changedColumns): array
+    public function getValuesBeforeChange(object $originalModel, array $changedColumns): array
     {
         $changes = [];
 

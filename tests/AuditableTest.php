@@ -15,7 +15,7 @@ class AuditableTest extends AuditableTestCase
     public function model_should_use_auditable_query_builder_as_base_query_builder()
     {
         $method = $this->makePrivateMethodsAccessible(Driver::class, 'newBaseQueryBuilder');
-        $driver = factory(Driver::class)->create();
+        $driver = Driver::factory()->create();
 
         $queryBuilder = $method->invokeArgs($driver, []);
 

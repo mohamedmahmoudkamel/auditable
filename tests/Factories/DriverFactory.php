@@ -1,19 +1,29 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Kamel\Auditable\Tests\Factories;
+
+use Illuminate\Database\Eloquent\Model;
 use Kamel\Auditable\Tests\Models\Driver;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-/*
-|--------------------------------------------------------------------------
-| Audit Factories
-|--------------------------------------------------------------------------
-|
-*/
+class DriverFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var class-string<Model>
+     */
+    protected $model = Driver::class;
 
-$factory->define(Driver::class, function (Faker $faker) {
-    return [
-        'name' => $faker->name,
-        'email' => $faker->email,
-        'age' => $faker->numberBetween(25, 60)
-    ];
-});
+    /**
+     * @return array
+     */
+    public function definition(): array
+    {
+        return [
+            'name' => fake()->name,
+            'email' => fake()->email,
+            'age' => fake()->numberBetween(25, 60)
+        ];
+    }
+}

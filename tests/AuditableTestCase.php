@@ -9,24 +9,31 @@ use Kamel\Auditable\AuditableServiceProvider;
 
 class AuditableTestCase extends TestCase
 {
-    protected function getEnvironmentSetUp($app)
+    /**
+     * @param $app
+     * @return void
+     */
+    protected function getEnvironmentSetUp($app): void
     {
         $app['config']->set('database.default', 'testing');
         $app['config']->set('database.connections.testing', [
-            'driver'   => 'sqlite',
+            'driver' => 'sqlite',
             'database' => ':memory:',
-            'prefix'   => '',
+            'prefix' => '',
         ]);
 
         $app['config']->set('audit.drivers.database.connection', 'testing');
     }
 
+    /**
+     * @return void
+     * @throws \Exception
+     */
     public function setUp(): void
     {
         parent::setUp();
 
         $this->loadMigrationsFrom(__DIR__ . '/Migrations');
-        $this->withFactories(__DIR__ . '/Factories');
     }
 
 
