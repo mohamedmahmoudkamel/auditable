@@ -1,0 +1,38 @@
+{
+    "name": "kamel/laravel-auditable",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Kamel\\Auditable\\": "src/",
+            "Kamel\\Auditable\\Events\\": "src/Events/",
+            "Kamel\\Auditable\\QueryBuilders\\": "src/QueryBuilders/",
+            "Kamel\\Auditable\\Providers\\": "src/Providers/",
+            "Kamel\\Auditable\\Traits\\": "src/Traits/",
+            "Kamel\\Auditable\\DTOs\\": "src/DTOs/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Kamel\\Auditable\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mohamed Kamel",
+            "email": "muhammed.nasef16@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "~8.2",
+        "illuminate/console": "^12.0",
+        "illuminate/database": "^12.0",
+        "illuminate/filesystem": "^12.0",
+        "spatie/data-transfer-object": "^3.9"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.5",
+        "mockery/mockery": "^1.6",
+        "orchestra/testbench": "^10.0",
+        "psy/psysh": "^0.12.0"
+    }
+}

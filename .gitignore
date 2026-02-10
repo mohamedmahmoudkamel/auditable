@@ -1,0 +1,7 @@
+vendor
+.idea
+.env
+.phpunit.cache
+.phpunit.result.cache
+.phpunit.result.xml
+.phpunit.result.json
