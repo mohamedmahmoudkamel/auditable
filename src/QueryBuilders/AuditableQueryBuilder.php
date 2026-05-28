@@ -68,6 +68,43 @@ class AuditableQueryBuilder extends Builder
     public function insertGetId(array $values, $sequence = null): int
     {
         $id = parent::insertGetId($values, $sequence);
+        $this->dispatchCreateAudit($id, $values);
+        return $id;
+    }
+
+
+    /**
+     * Insert a new record (used by non-incrementing / UUID models).
+     *
+     * @param array $values
+     * @return bool
+     * @throws UnknownProperties
+     */
+    public function insert(array $values): bool
+    {
+        $result = parent::insert($values);
+
+        if ($result && !empty($values) && !is_array(reset($values))) {
+            $model = app()->make($this->modelName);
+            $primaryKey = $model->getKeyName();
+            $id = $values[$primaryKey] ?? null;
+
+            if ($id !== null) {
+                $this->dispatchCreateAudit($id, $values);
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * @param int|string $id
+     * @param array $values
+     * @throws UnknownProperties
+     */
+    protected function dispatchCreateAudit(int|string $id, array $values): void
+    {
         $userType = is_object(auth()->user()) ? get_class(auth()->user()) : null;
 
         $audit = new AuditDTO([
@@ -81,8 +118,6 @@ class AuditableQueryBuilder extends Builder
         ]);
 
         AuditWasTriggered::dispatch([$audit]);
-
-        return $id;
     }
 
 
@@ -137,7 +172,7 @@ class AuditableQueryBuilder extends Builder
 
         return new AuditDTO([
             'model_name' => $this->modelName,
-            'model_id' => (int)$originalModel->$modelPrimaryKey,
+            'model_id' => $originalModel->$modelPrimaryKey,
             'old_values' => $valuesBeforeChanges,
             'new_values' => $valuesAfterChanges,
             'user_type' => $userType,

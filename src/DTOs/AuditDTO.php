@@ -13,9 +13,9 @@ class AuditDTO extends DataTransferObject
 
 
     /**
-     * @var int
+     * @var int|string
      */
-    public int $model_id;
+    public int|string $model_id;
 
 
     /**
@@ -37,9 +37,9 @@ class AuditDTO extends DataTransferObject
 
 
     /**
-     * @var int|null
+     * @var int|string|null
      */
-    public ?int $user_id;
+    public int|string|null $user_id;
 
 
     /**
